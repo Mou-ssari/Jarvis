@@ -1,12 +1,17 @@
 import time
+import os
+
 from stt import STT
 from tts import TTS
 from llm import LLM
+from dotenv import load_dotenv
+
+load_dotenv()  # Load environment variables from .env file
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
-MODEL_LLM  = r"C:\Projects\Jarvis\models\qwen2.5-1.5b-instruct-q5_k_m.gguf"
-MODEL_TTS  = r"C:\Projects\Jarvis\models\piper\en\en_US\lessac\medium\en_US-lessac-medium.onnx"
-CONFIG_TTS = r"C:\Projects\Jarvis\models\piper\en\en_US\lessac\medium\en_US-lessac-medium.onnx.json"
+MODEL_LLM = os.getenv("MODEL_LLM")
+MODEL_TTS = os.getenv("MODEL_TTS")
+CONFIG_TTS = os.getenv("CONFIG_TTS")
 
 def main():
     # Load all components once at startup
