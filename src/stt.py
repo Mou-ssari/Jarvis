@@ -23,7 +23,8 @@ class STT:
             self.silence_threshold = max( float(noise_rms) * 2.5, 0.003)
             print(f"[STT] Calibration complete. Silence threshold set to {self.silence_threshold:.4f}")
 
-    def record(self, max_duration: float = 15.0, silence_duration: float = 1.5) -> np.ndarray:
+    def record(self, max_duration: float = 10.0, silence_threshold: float = 0.01,
+               silence_duration: float = 1.5) -> np.ndarray:
         """
         Record until silence is detected or max_duration is reached.
         silence_threshold: RMS below this = silence
