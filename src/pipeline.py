@@ -18,12 +18,14 @@ def main():
     print("JARVIS is online. Press Ctrl+C to quit.")
     print("="*50 + "\n")
 
+    stt.calibrate(duration = 2.0)
+
     tts.speak("JARVIS online. How can I help you?")
 
     while True:
         try:
             # Record audio until silence is detected
-            audio = stt.record(silence_threshold=0.02, silence_duration=1.0)
+            audio = stt.record(silence_duration=2.0)
 
             # Transcribe
             user_text = stt.transcribe(audio)

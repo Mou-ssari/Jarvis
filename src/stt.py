@@ -11,8 +11,19 @@ class STT:
         self.sample_rate = 16000
         print("[STT] Ready.")
 
-    def record(self, max_duration: float = 10.0, silence_threshold: float = 0.01,
-               silence_duration: float = 1.5) -> np.ndarray:
+    def calibrate(self, duration: float = 2.0):
+            """ 
+            Calibrate background noise level for silence detection.
+            Call before main loop to set silence_threshold dynamically.
+            """
+            print("[STT] Calibrating Microphone - STFU")
+            audio = sd.rec(int(duration * self.sample_rate), samplerate = self.sample_rate, channels = 1, dtype = "float32")
+            sd.wait()
+            noise_rms = np.sqrt(np.mean(audio ** 2))
+            self.silence_threshold = max( float(noise_rms) * 2.5, 0.003)
+            print(f"[STT] Calibration complete. Silence threshold set to {self.silence_threshold:.4f}")
+
+    def record(self, max_duration: float = 15.0, silence_duration: float = 1.5) -> np.ndarray:
         """
         Record until silence is detected or max_duration is reached.
         silence_threshold: RMS below this = silence
@@ -27,14 +38,13 @@ class STT:
         silent_count = 0
         speech_started = False
 
-        with sd.InputStream(samplerate=self.sample_rate, channels=1,
-                            dtype="float32", blocksize=block_size) as stream:
+        with sd.InputStream(samplerate=self.sample_rate, channels=1, dtype="float32", blocksize=block_size) as stream:
             for _ in range(max_blocks):
                 block, _ = stream.read(block_size)
                 block = block.flatten()
                 rms = np.sqrt(np.mean(block ** 2))
 
-                if rms > silence_threshold:
+                if rms > self.silence_threshold:
                     speech_started = True
                     silent_count = 0
                     recorded.append(block)
@@ -57,8 +67,9 @@ class STT:
         start = time.time()
         segments, _ = self.model.transcribe(
             audio,
-            language="en",
-            vad_filter=True
+            language = "en",
+            vad_filter = True,
+            vad_parameters = dict(min_silence_duration_ms = 500, speech_pad_ms = 400)
         )
         text = " ".join([s.text.strip() for s in segments])
         elapsed = time.time() - start
