@@ -1,0 +1,13 @@
+test.wav
+Project_JARVIS.pdf
+models/**/*.gguf
+
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Environment files
+.env
+.venv/
+venv/
