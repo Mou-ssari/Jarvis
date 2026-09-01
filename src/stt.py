@@ -39,14 +39,13 @@ class STT:
         silent_count = 0
         speech_started = False
 
-        with sd.InputStream(samplerate=self.sample_rate, channels=1,
-                            dtype="float32", blocksize=block_size) as stream:
+        with sd.InputStream(samplerate=self.sample_rate, channels=1, dtype="float32", blocksize=block_size) as stream:
             for _ in range(max_blocks):
                 block, _ = stream.read(block_size)
                 block = block.flatten()
                 rms = np.sqrt(np.mean(block ** 2))
 
-                if rms > silence_threshold:
+                if rms > self.silence_threshold:
                     speech_started = True
                     silent_count = 0
                     recorded.append(block)
@@ -69,8 +68,9 @@ class STT:
         start = time.time()
         segments, _ = self.model.transcribe(
             audio,
-            language="en",
-            vad_filter=True
+            language = "en",
+            vad_filter = True,
+            vad_parameters = dict(min_silence_duration_ms = 500, speech_pad_ms = 400)
         )
         text = " ".join([s.text.strip() for s in segments])
         elapsed = time.time() - start

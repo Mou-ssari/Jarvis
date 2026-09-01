@@ -1,4 +1,6 @@
 import time
+import os
+
 from stt import STT
 from tts import TTS
 from llm import LLM
@@ -8,6 +10,7 @@ from wakeup import WakeWord
 MODEL_LLM  = r"C:\Projects\Jarvis\models\qwen2.5-1.5b-instruct-q5_k_m.gguf"
 MODEL_TTS  = r"C:\Projects\Jarvis\models\piper\en\en_US\lessac\medium\en_US-lessac-medium.onnx"
 CONFIG_TTS = r"C:\Projects\Jarvis\models\piper\en\en_US\lessac\medium\en_US-lessac-medium.onnx.json"
+
 
 DISMISSAL_PHRASES = [
     "goodbye", "goodbye jarvis", "bye", "bye jarvis",
@@ -33,6 +36,7 @@ def main():
     # stt.calibrate(duration = 1.5) #calibrate the microphone during startup
     stt.calibrate(duration=2.0)
 
+
     tts.speak("JARVIS online. How can I help you?")
     time.sleep(1)  # slight pause before starting the loop
 
@@ -55,14 +59,14 @@ def main():
                     time.sleep(0.3)
                     continue
 
-                print(f"[Pipeline] ⚙ Processing: '{user_text}'")
+                print(f"[Pipeline] Processing: '{user_text}'")
 
                 # Check for dismissal before sending to LLM
                 if is_dismissal(user_text):
                     tts.speak("Goodbye. Call me when you need me.")
                     time.sleep(1.0)
                     print("[Pipeline] Returned to sleep.\n")
-                    break  # Exit conversation loop → back to wake word
+                    break  # Exit conversation loop, back to wake word
 
 
                 pipeline_start = time.time() # Measure full pipeline latency
