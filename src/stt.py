@@ -11,6 +11,18 @@ class STT:
         self.sample_rate = 16000
         print("[STT] Ready.")
 
+    def calibrate(self, duration: float = 2.0):
+            """ 
+            Calibrate background noise level for silence detection.
+            Call before main loop to set silence_threshold dynamically.
+            """
+            print("[STT] Calibrating Microphone - STFU")
+            audio = sd.rec(int(duration * self.sample_rate), samplerate = self.sample_rate, channels = 1, dtype = "float32")
+            sd.wait()
+            noise_rms = np.sqrt(np.mean(audio ** 2))
+            self.silence_threshold = max( float(noise_rms) * 2.5, 0.003)
+            print(f"[STT] Calibration complete. Silence threshold set to {self.silence_threshold:.4f}")
+
     def record(self, max_duration: float = 10.0, silence_threshold: float = 0.01,
                silence_duration: float = 1.5) -> np.ndarray:
         """
