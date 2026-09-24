@@ -5,19 +5,21 @@ from stt import STT
 from tts import TTS
 from llm import LLM
 from wakeup import WakeWord
+from dotenv import load_dotenv
+
+load_dotenv() # Load environment variables from .env file
 
 # Paths
-MODEL_LLM  = r"C:\Projects\Jarvis\models\qwen2.5-1.5b-instruct-q5_k_m.gguf"
-MODEL_TTS  = r"C:\Projects\Jarvis\models\piper\en\en_US\lessac\medium\en_US-lessac-medium.onnx"
-CONFIG_TTS = r"C:\Projects\Jarvis\models\piper\en\en_US\lessac\medium\en_US-lessac-medium.onnx.json"
+MODEL_LLM = os.getenv("MODEL_LLM")
+MODEL_TTS = os.getenv("MODEL_TTS")
+CONFIG_TTS = os.getenv("CONFIG_TTS")
 
 
 DISMISSAL_PHRASES = [
     "goodbye", "goodbye jarvis", "bye", "bye jarvis",
-    "that's all", "that's all jarvis", "thank you jarvis",
-    "go to sleep", "sleep"
+    "that's all", "that's all jarvis","that is all", "thank you jarvis",
+    "thank you","go to sleep", "sleep", "goodnight", "stop listening", "stop listening jarvis",
 ]
-
 def is_dismissal(text: str) -> bool:
     return any(phrase in text.lower().strip() for phrase in DISMISSAL_PHRASES)
 
